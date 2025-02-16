@@ -1,0 +1,17 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  padding: 50px;
+}
+
+.MuiButton-root.create-button {
+  margin-bottom: 20px;
+  margin-left: auto;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
