@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button, Snackbar, Alert } from '@mui/material';
+import io from 'socket.io-client';
 
 import './App.css'
 import ResourcesTable from './components/ResourcesTable.tsx';
@@ -19,6 +20,10 @@ interface ResourcesResponse {
   limit: number;
   data: Resource[]
 }
+
+const socket = io('http://localhost:3001', {
+  transports: ['websocket'],
+});
 
 function App() {
   const apiUrl: string = import.meta.env.VITE_API_URL;
@@ -54,7 +59,7 @@ function App() {
 
       showSnackbar('Resource created successfully!', 'success');
 
-      await fetchResourcesData();
+      setPage(0);
     } catch (error) {
       console.error('Failed to create resource:', error);
       showSnackbar('Failed to create resource.', 'error');
@@ -79,6 +84,28 @@ function App() {
   useEffect(() => {
     fetchResourcesData();
   }, [page, pageSize]);
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from WebSocket server');
+    });
+
+    socket.on('resource.update', (data) => {
+      setResources((prevResources) =>
+        prevResources.map((resource) =>
+          resource.id === data.id ? data : resource
+        )
+      );
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <div className="main">
