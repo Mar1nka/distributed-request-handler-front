@@ -59,7 +59,11 @@ function App() {
 
       showSnackbar('Resource created successfully!', 'success');
 
-      setPage(0);
+      if (page === 0) {
+        await fetchResourcesData();
+      } else {
+        setPage(0);
+      }
     } catch (error) {
       console.error('Failed to create resource:', error);
       showSnackbar('Failed to create resource.', 'error');
